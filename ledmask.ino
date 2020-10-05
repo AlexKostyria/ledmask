@@ -106,20 +106,17 @@ int get_mouth (int max_mouth_index) {
 
 
 // Медианный фильтр 
-int median_filter (int value) {
-  static int buff[3];
-  static byte i = 0;
-  buff[i] = value;
-  if (++i > 2) i = 0;
-
-  if ((buff[0] <= buff[1]) && (buff[0] <= buff[2])) {
-    return (buff[1] <= buff[2]) ? buff[1] : buff[2];
+int median_3_filter (int v) {
+  static int a = 0, b = 0, c = 0;
+  a = b;
+  b = c;
+  c = v;
+  if (a <= b && a <= c) {
+    return b <= c ? b : c;
+  } else if (b <= a && b <= c) {
+    return a <= c ? a : c;
   } else {
-    if ((buff[1] <= buff[0]) && (buff[1] <= buff[2])) {
-      return (buff[0] <= buff[2]) ? buff[0] : buff[2];
-    } else {
-      return (buff[0] <= buff[1]) ? buff[0] : buff[1];
-    }
+    return a <= b ? a : b;
   }
 }
 
@@ -207,7 +204,7 @@ void setup() {
 
 void loop() {
   int mouth_index = get_mouth(MOUTH_CNT - 1);
-  int mouth_index_f = median_filter(mouth_index);
+  int mouth_index_f = median_3_filter(mouth_index);
 
   const uint8_t *mouth = mouths[mouth_index_f];
   uint8_t brightness = mouth_index_f == 0 ? LED_brightness_0 : LED_brightness;
