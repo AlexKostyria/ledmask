@@ -75,33 +75,42 @@ uint8_t leds_info[LED_CNT * 3];
 #define VOL_THR 25  // порог тишины
 #define VOL_MAX 200 // максимальная громкость
 
-int get_mouth (int max_mouth_index) {
-  int current_max = 0; // max vol
+
+int get_volume () {
+  int m = 0;
   for (int i = 0; i < MIC_CNT; i++) {
     int v = analogRead(MIC_PIN);
-    if (v > current_max) current_max = v;
+    if (v > m) m = v;
   }
-  
-  static float filtered_max = current_max;
-  filtered_max += (current_max - filtered_max) * 0.95; // скользящий фильтр
-  
-  static float steady_max = current_max;
+  return m;
+}
 
-  int vol = filtered_max - steady_max - VOL_THR;
-  
-  if (vol > 0) {
-    steady_max += (filtered_max - steady_max) * 0.005;
+
+int filter_volume (int current) {
+  static int filtered = 0;
+  filtered += (current - filtered) * 0.95; // скользящий фильтр
+
+  static int background = VOL_THR; // фоновые звуки
+
+  int volume = filtered - background;
+
+  if (volume > 0) {
+    background += (filtered - background) * 0.005;
+  } else {
+    volume = 0;
   }
 
-  if (steady_max > filtered_max) {
-    steady_max = filtered_max;
+  if (background > filtered) {
+    background = filtered;
   }
 
-  if (vol > 0) {
-    return (constrain (map (vol, 0, VOL_MAX, 0, max_mouth_index), 0, max_mouth_index) );
-  }
-  
-  return 0;
+  return volume;
+}
+
+
+int get_mouth (int volume, int max_mouth_index) {
+  int index = filter_volume(volume) * max_mouth_index / (VOL_MAX - VOL_THR);
+  return index < max_mouth_index ? index : max_mouth_index;
 }
 
 
@@ -203,7 +212,8 @@ void setup() {
 }
 
 void loop() {
-  int mouth_index = get_mouth(MOUTH_CNT - 1);
+  int volume = get_volume();
+  int mouth_index = get_mouth(volume, MOUTH_CNT - 1);
   int mouth_index_f = median_3_filter(mouth_index);
 
   const uint8_t *mouth = mouths[mouth_index_f];
