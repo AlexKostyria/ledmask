@@ -87,12 +87,12 @@ int get_volume () {
 
 
 int filter_volume (int current) {
-  static int filtered = 0;
+  static int filtered = current;
   filtered += (current - filtered) * 0.95; // скользящий фильтр
 
-  static int background = VOL_THR; // фоновые звуки
+  static int background = current; // фоновые звуки
 
-  int volume = filtered - background;
+  int volume = filtered - background - VOL_THR;
 
   if (volume > 0) {
     background += (filtered - background) * 0.005;
