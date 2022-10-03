@@ -12,7 +12,7 @@
 * Li-Ion аккумулятор 3.7v
 
 ## Схема маски
-![Схема маски](https://github.com/AlexKostyria/ledmask/blob/master/ledmask.jpg)
+![Схема маски](/ledmaskUk.jpg)
 
 ## Відео
 [Відео російською на YouTube](https://www.youtube.com/watch?v=H2TMpz6suMY)
@@ -33,7 +33,7 @@
 * Li-Ion аккумулятор 3.7v
 
 ## Схема маски
-![Схема маски](https://github.com/AlexKostyria/ledmask/blob/master/ledmask.jpg)
+![Схема маски](/_ledmask.jpg)
 
 ## Видео
 [Видео на YouTube](https://www.youtube.com/watch?v=H2TMpz6suMY)
